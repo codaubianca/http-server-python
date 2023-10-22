@@ -8,9 +8,12 @@ def main():
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     conn, addr = server_socket.accept() # wait for client
     data = conn.recv(1024)
-    # if not data:
-    #     break
-    response = b"HTTP/1.1 200 OK\r\n\r\n"
+    http_method = data.readline()
+    path = http_method.split()[1]
+    if not path == "/":
+        response = b"HTTP/1.1 200 OK\r\n\r\n"
+    else:
+        response = b"HTTP/1.1 404 Not Found\r\n\r\n"
     conn.send(response)
     conn.close()
 
