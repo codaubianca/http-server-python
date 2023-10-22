@@ -12,7 +12,7 @@ def handle_request(data) -> str:
         if path == "/":
             response = b"HTTP/1.1 200 OK\r\n\r\n"
         elif path.startswith("/echo"):
-            random_text = path.split("/")[1]
+            random_text = path[6:]
             text_len = len(random_text)
             response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {text_len}\r\n\r\n{random_text}\r\n".encode("utf-8")
         else:
