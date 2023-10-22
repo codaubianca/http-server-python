@@ -5,7 +5,7 @@ def handle_request(data) -> str:
     http_method = data.split("/r/n")[0]
     path = http_method.split()[1]
     print(f"path: {path}")
-    if path != "/":
+    if path == "/":
         response = b"HTTP/1.1 200 OK\r\n\r\n"
     else:
         response = b"HTTP/1.1 404 Not Found\r\n\r\n"
