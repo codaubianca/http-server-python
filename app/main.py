@@ -1,14 +1,21 @@
 import socket
-
-def handle_request(data) -> str:
+def parse_request(data) -> {str, str}:
     data = data.decode("utf-8")
     http_method = data.split("/r/n")[0]
+    method = http_method.split()[0]
     path = http_method.split()[1]
-    print(f"path: {path}")
-    if path == "/":
-        response = b"HTTP/1.1 200 OK\r\n\r\n"
-    else:
-        response = b"HTTP/1.1 404 Not Found\r\n\r\n"
+    return method, path
+    
+def handle_request(data) -> str:
+    method, path = parse_request(data)
+    if method == "GET":
+        if path.startswith("/echo"):
+            random_text = path.split("/")[1]
+            text_len = len(random_text)
+            response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {text_len}\r\n\r\n{random_text}".encode("utf-8")
+
+        else:
+            response = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
     return response
 
