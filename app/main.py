@@ -8,6 +8,7 @@ def main():
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     conn, addr = server_socket.accept() # wait for client
     data = conn.recv(1024)
+    data = data.decode("utf-8")
     http_method = data.readline()
     path = http_method.split()[1]
     if not path.startswith("/"):
