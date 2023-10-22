@@ -14,7 +14,7 @@ def handle_request(data) -> str:
         elif path.startswith("/echo"):
             random_text = path[6:]
             text_len = len(random_text)
-            response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {text_len}\r\n\r\n{random_text}\r\n".encode("utf-8")
+            response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {text_len}\r\n\r\n{random_text}".encode("utf-8")
         else:
             response = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
