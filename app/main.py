@@ -10,7 +10,7 @@ def main():
     data = conn.recv(1024)
     http_method = data.readline()
     path = http_method.split()[1]
-    if not path == "/":
+    if not path.startswith("/"):
         response = b"HTTP/1.1 200 OK\r\n\r\n"
     else:
         response = b"HTTP/1.1 404 Not Found\r\n\r\n"
