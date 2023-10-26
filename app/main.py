@@ -1,6 +1,12 @@
+import sys
 import socket
+import selectors
+import types
+
+sel = selectors.DefaultSelector()
+
 def parse_request(data) -> {str, str}:
-    data = data.decode("utf-8")
+    # data = data.decode("utf-8")
     data_lines = data.split("\r\n")
     method, path, version = data_lines[0].split()
     headers = {}
@@ -29,19 +35,56 @@ def handle_request(data) -> str:
 
     return response
 
+def accept_wrapper(server_socket):
+    client_socket, client_addr = server_socket.accept() # wait for client
+    client_socket.setblocking(False)
+    data = types.SimpleNamespace(addr=client_addr, inb=b"", outb=b"")
+    events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    sel.register(client_socket, events, data=data)
+
+
+def server_connection(key, mask):
+    client_socket = key.fileobj
+    data = key.data
+
+    if mask & selectors.EVENT_READ:
+        recv_data = client_socket.recv(1024)
+        if recv_data:
+            data.outb += recv_data
+        else:
+            sel.unregister(client_socket)
+            client_socket.close()
+    
+    if mask & selectors.EVENT_WRITE:
+        if data.outb:
+            response = handle_request(data.outb)
+            sent = client_socket.send(response)
+            data.outb = data.outb[sent:]
+
+    response = handle_request(data)
+    client_socket.send(response)
+
+
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     print("Logs from your program will appear here!")
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    
-    while True:
-        client_socket, client_addr = server_socket.accept() # wait for client
-        data = client_socket.recv(1024)
-        response = handle_request(data)
-        client_socket.send(response)
+    server_socket.setblocking(False)
+    sel.register(server_socket, selectors.EVENT_READ, data=None)
 
-        client_socket.close()
+    try:
+        while True:
+            events = sel.select(timeout=None)
+            for key, mask in events:
+                if key.data is None:
+                    accept_wrapper(key.fileobj)
+                else:
+                    server_connection(key, mask)
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt")
+    finally:
+        sel.close()
 
 
 if __name__ == "__main__":
