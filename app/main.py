@@ -8,7 +8,8 @@ sel = selectors.DefaultSelector()
 def parse_request(data) -> {str, str}:
     data = data.decode("utf-8")
     data_lines = data.split("\r\n")
-    method, path, version = data_lines[0].split()
+    print("http header: ", data_lines[0])
+    method, path, version = data_lines[0].split(" ")
     headers = {}
     for line in data_lines[1:]:
         if line == "":
@@ -38,6 +39,7 @@ def handle_request(data) -> str:
 def accept_wrapper(server_socket):
     client_socket, client_addr = server_socket.accept() # wait for client
     client_socket.setblocking(False)
+    print("Accepted connection from ", client_addr)
     data = types.SimpleNamespace(addr=client_addr, inb=b"", outb=b"")
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     sel.register(client_socket, events, data=data)
@@ -64,7 +66,7 @@ def server_connection(key, mask):
 
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
-    print("Logs from your program will appear here!")
+    # print("Logs from your program will appear here!")
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     server_socket.setblocking(False)
