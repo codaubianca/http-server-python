@@ -1,7 +1,7 @@
 import socket
 def parse_request(data) -> {str, str}:
     data = data.decode("utf-8")
-    data_lines = data.split("/r/n")
+    data_lines = data.split("\r\n")
     method, path, version = data_lines[0].split()
     headers = {}
     for line in data_lines[1:]:
@@ -9,7 +9,7 @@ def parse_request(data) -> {str, str}:
             continue
         key, content = line.split(": ")
         headers[key] = content
-    return method, path, headers
+    return method, path, version, headers
     
 def handle_request(data) -> str:
     method, path, headers = parse_request(data)
