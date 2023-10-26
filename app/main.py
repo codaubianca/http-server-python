@@ -12,7 +12,7 @@ def parse_request(data) -> {str, str}:
     return method, path, version, headers
     
 def handle_request(data) -> str:
-    method, path, headers = parse_request(data)
+    method, path, version, headers = parse_request(data)
     if method == "GET":
         if path == "/":
             response = b"HTTP/1.1 200 OK\r\n\r\n"
