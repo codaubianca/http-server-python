@@ -6,7 +6,7 @@ import types
 sel = selectors.DefaultSelector()
 
 def parse_request(data) -> {str, str}:
-    # data = data.decode("utf-8")
+    data = data.decode("utf-8")
     data_lines = data.split("\r\n")
     method, path, version = data_lines[0].split()
     headers = {}
