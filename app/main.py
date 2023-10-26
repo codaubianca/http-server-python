@@ -35,12 +35,13 @@ def main():
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     
-    client_socket, client_addr = server_socket.accept() # wait for client
-    data = client_socket.recv(1024)
-    response = handle_request(data)
-    client_socket.send(response)
+    while True:
+        client_socket, client_addr = server_socket.accept() # wait for client
+        data = client_socket.recv(1024)
+        response = handle_request(data)
+        client_socket.send(response)
 
-    client_socket.close()
+        client_socket.close()
 
 
 if __name__ == "__main__":
