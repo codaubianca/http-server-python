@@ -52,6 +52,7 @@ def server_connection(key, mask):
     if mask & selectors.EVENT_READ:
         recv_data = client_socket.recv(1024)
         if recv_data:
+            print("receiving data:", recv_data)
             data.outb += recv_data
         else:
             sel.unregister(client_socket)
@@ -59,6 +60,7 @@ def server_connection(key, mask):
     
     if mask & selectors.EVENT_WRITE:
         if data.outb:
+            print("final data.outb:", data.outb)
             response = handle_request(data.outb)
             sent = client_socket.send(response)
             data.outb = data.outb[sent:]
