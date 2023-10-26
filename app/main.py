@@ -61,9 +61,6 @@ def server_connection(key, mask):
             sent = client_socket.send(response)
             data.outb = data.outb[sent:]
 
-    response = handle_request(data)
-    client_socket.send(response)
-
 
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
