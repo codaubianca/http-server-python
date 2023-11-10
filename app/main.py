@@ -37,9 +37,10 @@ def handle_request(data, args=None) -> str:
             filename = path[7:]
             file_content = ""
             if args.directory is not None:
-                filename = os.path.join(args.directory, filename)
-                if os.path.exists(filename):
-                    with open(filename, "r") as f:
+                filepath = os.path.join(args.directory, filename)
+                print("filepath:", filepath)
+                if os.path.exists(filepath):
+                    with open(filepath, "r") as f:
                         file_content = f.read()
             text_len = len(file_content)
             response = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {text_len}\r\n\r\n{file_content}".encode("utf-8")
