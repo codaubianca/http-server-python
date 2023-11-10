@@ -42,6 +42,7 @@ def accept_wrapper(server_socket):
     print("Accepted connection from ", client_addr)
     data = types.SimpleNamespace(addr=client_addr, inb=b"", outb=b"")
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    print("mask in accept_wrapper: ", events)
     sel.register(client_socket, events, data=data)
 
 
