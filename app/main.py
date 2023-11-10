@@ -64,8 +64,8 @@ def server_connection(key, mask):
             print("mask in connection: ", mask)
             print("final data.outb:", data.outb)
             response = handle_request(data.outb)
-            sent = client_socket.send(response)
-            size = len(data.outb)
+            size = client_socket.send(response)
+            #size = len(data.outb)
             data.outb = data.outb[size:]
 
 
