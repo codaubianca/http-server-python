@@ -68,6 +68,8 @@ def server_connection(key, mask):
             size = client_socket.send(response)
             #size = len(data.outb)
             data.outb = data.outb[size:]
+            sel.unregister(client_socket)
+            client_socket.close()
 
 
 def main():
