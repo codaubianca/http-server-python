@@ -9,7 +9,8 @@ sel = selectors.DefaultSelector()
 
 def parse_request(data) -> {str, str}:
     data = data.decode("utf-8")
-    data_lines = data.split("\r\n")
+    request_info = data.split("\r\n\r\n")[0]
+    data_lines = request_info.split("\r\n")
     print("http header: ", data_lines[0])
     method, path, version = data_lines[0].split(" ")
     headers = {}
