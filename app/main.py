@@ -19,10 +19,10 @@ def parse_request(data) -> {str, str}:
             continue
         key, content = line.split(": ")
         headers[key] = content
-    return method, path, version, headers
+    return method, path, version, headers, data
     
 def handle_request(data, args=None) -> str:
-    method, path, version, headers = parse_request(data)
+    method, path, version, headers, data_decoded = parse_request(data)
     if method == "GET":
         if path == "/":
             response = b"HTTP/1.1 200 OK\r\n\r\n"
@@ -57,7 +57,7 @@ def handle_request(data, args=None) -> str:
                 filepath = os.path.join(args.directory, filename)
                 print("filepath:", filepath)
                 with open(filepath, "w") as f:
-                    file_content = f.write(data.split("\r\n\r\n")[1])
+                    file_content = f.write(data_decoded.split("\r\n\r\n")[1])
                     response = f"HTTP/1.1 201 OK\r\n\r\n"    
     else:
         response = b"HTTP/1.1 405 Method Not Allowed\r\n\r\n"
