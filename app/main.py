@@ -42,8 +42,10 @@ def handle_request(data, args=None) -> str:
                 if os.path.exists(filepath):
                     with open(filepath, "r") as f:
                         file_content = f.read()
-            text_len = len(file_content)
-            response = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {text_len}\r\n\r\n{file_content}".encode("utf-8")
+                        text_len = len(file_content)
+                        response = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {text_len}\r\n\r\n{file_content}".encode("utf-8")
+                else:
+                    response = b"HTTP/1.1 404 Not Found\r\n\r\n"    
         else:
             response = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
