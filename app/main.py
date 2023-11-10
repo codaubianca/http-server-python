@@ -2,6 +2,8 @@ import sys
 import socket
 import selectors
 import types
+import os
+import argparse
 
 sel = selectors.DefaultSelector()
 
@@ -18,7 +20,7 @@ def parse_request(data) -> {str, str}:
         headers[key] = content
     return method, path, version, headers
     
-def handle_request(data) -> str:
+def handle_request(data, args=None) -> str:
     method, path, version, headers = parse_request(data)
     if method == "GET":
         if path == "/":
@@ -31,6 +33,16 @@ def handle_request(data) -> str:
             user_agent = headers["User-Agent"]
             text_len = len(user_agent)
             response = f"HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: {text_len}\r\n\r\n{user_agent}".encode("utf-8")
+        elif path.startswith("/files"):
+            filename = path[7:]
+            file_content = ""
+            if args.directory is not None:
+                filename = os.path.join(args.directory, filename)
+                if os.path.exists(filename):
+                    with open(filename, "r") as f:
+                        file_content = f.read()
+            text_len = len(file_content)
+            response = f"HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: {text_len}\r\n\r\n{file_content}".encode("utf-8")
         else:
             response = b"HTTP/1.1 404 Not Found\r\n\r\n"
 
@@ -46,7 +58,7 @@ def accept_wrapper(server_socket):
     sel.register(client_socket, events, data=data)
 
 
-def server_connection(key, mask):
+def server_connection(key, mask, args=None):
     client_socket = key.fileobj
     data = key.data
 
@@ -64,10 +76,10 @@ def server_connection(key, mask):
             print("Write event")
             print("mask in connection: ", mask)
             print("final data.outb:", data.outb)
-            response = handle_request(data.outb)
+            response = handle_request(data.outb, args)
             size = client_socket.send(response)
-            #size = len(data.outb)
             data.outb = data.outb[size:]
+            # TODO: unregistering here as hack. is there a better way to do this? 
             sel.unregister(client_socket)
             client_socket.close()
 
@@ -75,7 +87,10 @@ def server_connection(key, mask):
 def main():
     # You can use print statements as follows for debugging, they'll be visible when running tests.
     # print("Logs from your program will appear here!")
-
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--directory", action="store", dest="directory", default=None)
+    args = parser.parse_args()
+    print("args:", args)    
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
     server_socket.setblocking(False)
     sel.register(server_socket, selectors.EVENT_READ, data=None)
@@ -89,7 +104,7 @@ def main():
                 if key.data is None:
                     accept_wrapper(key.fileobj)
                 else:
-                    server_connection(key, mask)
+                    server_connection(key, mask, args)
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
     finally:
