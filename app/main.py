@@ -65,6 +65,7 @@ def server_connection(key, mask):
             print("final data.outb:", data.outb)
             response = handle_request(data.outb)
             sent = client_socket.send(response)
+            print("sent:", sent)
             data.outb = data.outb[sent:]
 
 
