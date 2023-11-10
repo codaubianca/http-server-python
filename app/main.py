@@ -52,10 +52,10 @@ def handle_request(data, args=None) -> str:
 def accept_wrapper(server_socket):
     client_socket, client_addr = server_socket.accept() # wait for client
     client_socket.setblocking(False)
-    print("Accepted connection from ", client_addr)
+    #print("Accepted connection from ", client_addr)
     data = types.SimpleNamespace(addr=client_addr, inb=b"", outb=b"")
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
-    print("mask in accept_wrapper: ", events)
+    #print("mask in accept_wrapper: ", events)
     sel.register(client_socket, events, data=data)
 
 
@@ -66,7 +66,7 @@ def server_connection(key, mask, args=None):
     if mask & selectors.EVENT_READ:
         recv_data = client_socket.recv(1024)
         if recv_data:
-            print("receiving data:", recv_data)
+            #print("receiving data:", recv_data)
             data.outb += recv_data
         else:
             sel.unregister(client_socket)
@@ -74,9 +74,9 @@ def server_connection(key, mask, args=None):
     
     if mask & selectors.EVENT_WRITE:
         if data.outb:
-            print("Write event")
-            print("mask in connection: ", mask)
-            print("final data.outb:", data.outb)
+            #print("Write event")
+            #print("mask in connection: ", mask)
+            #print("final data.outb:", data.outb)
             response = handle_request(data.outb, args)
             size = client_socket.send(response)
             data.outb = data.outb[size:]
@@ -100,8 +100,8 @@ def main():
         while True:
             events = sel.select(timeout=None)
             for key, mask in events:
-                print("key:", key)
-                print("mask in main:", mask)
+                #print("key:", key)
+                #print("mask in main:", mask)
                 if key.data is None:
                     accept_wrapper(key.fileobj)
                 else:
