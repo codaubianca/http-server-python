@@ -56,12 +56,9 @@ def handle_request(data, args=None) -> str:
             if args.directory is not None:
                 filepath = os.path.join(args.directory, filename)
                 print("filepath:", filepath)
-                if os.path.exists(filepath):
-                    with open(filepath, "w") as f:
-                        file_content = f.write(data.split("\r\n\r\n")[1])
-                        response = f"HTTP/1.1 201 OK\r\n\r\n"
-                else:
-                    response = b"HTTP/1.1 404 Not Found\r\n\r\n"       
+                with open(filepath, "w") as f:
+                    file_content = f.write(data.split("\r\n\r\n")[1])
+                    response = f"HTTP/1.1 201 OK\r\n\r\n"    
     else:
         response = b"HTTP/1.1 405 Method Not Allowed\r\n\r\n"
     
