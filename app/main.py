@@ -58,7 +58,7 @@ def handle_request(data, args=None) -> str:
                 print("filepath:", filepath)
                 with open(filepath, "w") as f:
                     f.write(data_decoded.split("\r\n\r\n")[1])
-                response = f"HTTP/1.1 201 OK\r\n\r\n"    
+                response = b"HTTP/1.1 201 OK\r\n\r\n"    
     else:
         response = b"HTTP/1.1 405 Method Not Allowed\r\n\r\n"
     
