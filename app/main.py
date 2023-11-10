@@ -60,6 +60,8 @@ def server_connection(key, mask):
     
     if mask & selectors.EVENT_WRITE:
         if data.outb:
+            print("Write event")
+            print("mask in connection: ", mask)
             print("final data.outb:", data.outb)
             response = handle_request(data.outb)
             sent = client_socket.send(response)
@@ -78,6 +80,8 @@ def main():
         while True:
             events = sel.select(timeout=None)
             for key, mask in events:
+                print("key:", key)
+                print("mask in main:", mask)
                 if key.data is None:
                     accept_wrapper(key.fileobj)
                 else:
